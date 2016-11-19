@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" 
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<!-- com.briup.mappers.StudentMapper是我们定义接口的全限定名字 这样就可以使用接口调用映射的SQL语句了 这个名字一定要和接口对应上-->
+<mapper namespace="com.briup.estore.dao.CustomerMapper">
+	<resultMap type="Customer" id="CustomerResult">
+		<id property="id" column="id"/>
+		<result property="name" column="name"/>
+		<result property="password" column="password"/>
+		<result property="zip" column="zip"/>
+		<result property="address" column="address"/>
+		<result property="telephone" column="telephone"/>
+		<result property="email" column="email"/>
+		<collection property="orders" resultMap="OrderResult"/>
+	</resultMap>
+	
+	<resultMap type="Order" id="OrderResult">
+		<id property="id" column="id"/>
+		<result property="cost" column="cost"/>
+		<result property="orderDate" column="orderDate"/>
+	</resultMap>
+	
+	<select id="findByName" parameterType="String" resultMap="CustomerResult">
+		select * from tbl_customer  
+		where name=#{name}
+	</select>
+	
+	<insert id="saveCustomer" parameterType="Customer">
+		<selectKey keyProperty="id" resultType="long" order="BEFORE"> 
+				SELECT my_seq.nextval FROM DUAL 
+			</selectKey>
+		insert into tbl_customer(id,name,password,zip,address,telephone,email) 
+		values(#{id},#{name},#{password},#{zip},#{address},#{telephone},#{email})  
+	</insert>
+	
+	<update id="updateCustomer" parameterType="Customer">
+		update tbl_customer set name=#{name},password=#{password},zip=#{zip},
+		address=#{address},telephone=#{telephone},email=#{email} where name=#{name}
+	</update>
+</mapper>

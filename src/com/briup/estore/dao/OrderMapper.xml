@@ -1,0 +1,53 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" 
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<!-- com.briup.mappers.StudentMapper是我们定义接口的全限定名字 这样就可以使用接口调用映射的SQL语句了 这个名字一定要和接口对应上-->
+<mapper namespace="com.briup.estore.dao.OrderMapper">
+	<resultMap type="Customer" id="CustomerResult">
+		<id property="id" column="id"/>
+		<result property="name" column="name"/>
+		<result property="password" column="password"/>
+		<result property="zip" column="zip"/>
+		<result property="address" column="address"/>
+		<result property="telephone" column="telephone"/>
+		<result property="email" column="email"/>
+	</resultMap>
+
+	<resultMap type="Order" id="OrderResult">
+		<id property="id" column="id"/>
+		<result property="cost" column="cost"/>
+		<result property="orderDate" column="orderDate"/>
+		<association property="customer" resultMap="CustomerResult"/>
+		<!-- <collection property="lines" resultMap="LineResult"/> -->
+	</resultMap>
+	
+	<resultMap type="Line" id="LineResult">
+		<id property="id" column="id"/>
+		<result property="num" column="num"/>
+		<!-- <collection property="book" resultMap="BookResult"/> -->
+	</resultMap>
+	
+	<resultMap type="Book" id="BookResult">
+		<id property="id" column="id"/>
+		<result property="name" column="name"/>
+		<result property="price" column="price"/>
+	</resultMap>
+
+	<insert id="saveOrder" parameterType="Order">
+		<selectKey keyProperty="id" resultType="long" order="BEFORE"> 
+				SELECT my_seq.nextval FROM DUAL 
+			</selectKey>
+		insert into tbl_order(id,cost,orderDate,customer_id) 
+		values(#{id},#{cost},#{orderDate},#{customer.id})
+	</insert>
+	
+	<delete id="deleteOrder" parameterType="long">
+		delete from tbl_order where id=#{id}
+	</delete>
+	
+	<select id="findOrderById" parameterType="long" resultMap="OrderResult">
+		select * from tbl_order o,tbl_customer c
+		where customer_id=#{id}
+		and o.customer_id =c.id
+	</select>
+</mapper>

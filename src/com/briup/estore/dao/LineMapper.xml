@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" 
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<!-- com.briup.mappers.StudentMapper是我们定义接口的全限定名字 这样就可以使用接口调用映射的SQL语句了 这个名字一定要和接口对应上-->
+<mapper namespace="com.briup.estore.dao.LineMapper">
+	<resultMap type="Order" id="OrderResult">
+		<id property="id" column="id"/>
+		<result property="cost" column="cost"/>
+		<result property="orderDate" column="orderDate"/>
+	</resultMap>
+	
+	<resultMap type="Line" id="LineResult">
+		<id property="id" column="id"/>
+		<result property="num" column="num"/>
+		<association property="order" resultMap="OrderResult"/>
+		<collection property="book" resultMap="BookResult"/>
+	</resultMap>
+	
+	<resultMap type="Book" id="BookResult">
+		<id property="id" column="id"/>
+		<result property="name" column="name"/>
+		<result property="price" column="price"/>
+	</resultMap>
+
+	<select id="findById" parameterType="long" resultMap="LineResult">
+		select * from tbl_line l,tbl_book b
+		where l.order_id=#{id}
+		and l.book_id=b.id
+	</select>
+	
+	<insert id="insertLine" parameterType="Line">
+		<selectKey keyProperty="id" resultType="long" order="BEFORE"> 
+					SELECT my_seq.nextval FROM DUAL 
+		</selectKey>
+		insert into tbl_line(id,num,order_id,book_id)	
+		values(#{id},#{num},#{order.id},#{book.id})
+	</insert>
+	
+	
+</mapper>
